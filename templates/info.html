@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<hr />
+
+{% if parsed['status'] != 415 %}
+
+<h3>Metadata</h3>
+<a id="metadata"></a>
+
+<table class="uk-table uk-table-small uk-table-striped">
+   {% for key, value in parsed['metadata'].items() %}
+      <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+   {% endfor %}
+</table>
+
+<p><a href="#top">^^</a></p>
+
+<hr />
+
+<h3>Content</h3>
+<a id="content"></a>
+
+<p>{{ parsed['content'] }}</p>
+
+<p><a href="#top">^^</a></p>
+
+{% else %}
+
+<p>Sorry, this appears to be an unsupported file type.</p>
+
+{% endif %}
+
+{% endblock %}

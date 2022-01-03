@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<form method="post" enctype="multipart/form-data">
+
+    <div class="uk-margin" uk-margin>
+        <div uk-form-custom="target: true">
+            <input type="file" name="file">
+            <input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
+        </div>
+        <button class="uk-button uk-button-default"><span uk-icon="cloud-upload"></span> Upload</button>
+    </div>
+
+</form>
+
+{% endblock %}

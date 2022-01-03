@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tikka</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.9.4/css/uikit.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hack/0.8.1/hack.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.9.4/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.9.4/js/uikit-icons.min.js"></script>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <style>
+  h1, h2, h3, h4 {
+    font-family: 'Hack', monospace;
+    margin-top: 0px;
+  }
+  </style>
+</head>
+<body>
+  <a id="top"></a>
+
+  <div class="uk-padding">
+    <h1><a href="/">Tikka</a></h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for message in messages %}
+      <li>{{ message|safe }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% block body %}{% endblock %}
+
+  </div>
+
+</html>
