@@ -1,20 +1,19 @@
 # tikka
 
-This repo contains Python tools for converting and analysing documents, including a [Flask](https://palletsprojects.com/p/flask/) web frontend to upload, serve and analyse documents. The web frontend is Heroku-ready and works out of the box with Python 3.10.
+Tikka is a plain-vanilla [Flask](https://palletsprojects.com/p/flask/) web frontend, which lets you upload, download and analyse a variety of documents. The app is ready to be deployed on [Heroku](https://chicken-tikka.herokuapp.com)-ready and works out of the box with Python [3.10](https://docs.python.org/3/whatsnew/3.10.html).
 
 ## Usage
 
-First, spin up an [Apache Tika](https://tika.apache.org/1.24.1/gettingstarted.html) instance in Docker mapped to a local port. By default, the new instance of [docker-tikaserver](https://github.com/LogicalSpark/docker-tikaserver) will run on port 9998.
+First, install the necessary Python packages.
 
 ```sh
-sudo docker pull logicalspark/docker-tikaserver
-sudo docker run -d -p 9998:9998 logicalspark/docker-tikaserver
+pip install --user virtualenv
+pip install -r requirements.txt
 ```
 
-Next, start the Flask web server in development mode running on port 5000 (by default).
+Next, activate a virtual environment and start the Flask web frontend running on port 5000 (by default).
 
 ```sh
-pip install -r requirements.txt
 source env/bin/activate
 flask run
 ```
