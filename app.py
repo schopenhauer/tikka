@@ -1,23 +1,23 @@
 import os
 import tika
-import zlib
-import base64
+#import zlib
+#import base64
 import datetime
 from tika import parser
 from flask import Flask, flash, request, redirect, url_for, render_template, send_from_directory
 from werkzeug.utils import secure_filename
-from cryptography.fernet import Fernet
+#from cryptography.fernet import Fernet
+from itsdangerous import URLSafeSerializer
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['txt', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'tikka'
 
-#key = Fernet.generate_key()
-key = b'QIq6wIzhBFLQk0zvr7VRunMsMmJYI-bfnOjM9e2PGcg='
-cipher = Fernet(key)
+auth = URLSafeSerializer('secret key', app.secret_key)
 
 tika.initVM()
 
@@ -36,58 +36,58 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def parse(filename):
-    parsed = parser.from_file(filename)
     print('Parsing:', filename)
-    return parsed
+    return parser.from_file(filename)
 
 def encrypt(str):
-    return base64.urlsafe_b64encode(zlib.compress(cipher.encrypt(str.encode()), 9)).decode()
+    #return base64.urlsafe_b64encode(zlib.compress(cipher.encrypt(str.encode()), 9)).decode()
+    return auth.dumps({"payload": str})
 
 def decrypt(str):
-    return cipher.decrypt(zlib.decompress(base64.urlsafe_b64decode(str))).decode()
+    #return cipher.decrypt(zlib.decompress(base64.urlsafe_b64decode(str))).decode()
+    return auth.loads(str)['payload']
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     filename = ''
     encrypted_filename = ''
     if request.method == 'POST':
-        # check if the post request has the file part
+        # check if the POST request has the file part
         if 'file' not in request.files:
             flash('No file uploaded')
             return redirect(request.url)
         file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
+        # if user does not select file, or browser submits an empty part without filename
         if file.filename == '':
             flash('No file selected')
             return redirect(request.url)
-        #if file and allowed_file(file.filename):
+        # if file and allowed_file(file.filename):
         if file:
             filename = secure_filename(file.filename)
             target_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(target_file)
             encrypted_filename = encrypt(filename)
-            flash('File: <a href="/d/' + encrypted_filename + '">' + filename + '</a> (<a href="/i/' + encrypted_filename + '">info</a>)')
+            flash('File: <a href="/d/' + encrypted_filename + '">' + filename + '</a> (<a href="/p/' + encrypted_filename + '">info</a>)')
             return redirect(request.url)
     return render_template('upload.html', filename=filename, encrypted_filename=encrypted_filename)
 
-@app.route('/d/<encrypted_filename>')
-def download_file(encrypted_filename):
-    filename = decrypt(encrypted_filename)
+@app.route('/d/<filename>')
+def download(filename):
+    filename = decrypt(filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename, as_attachment=True)
 
-@app.route('/r/<encrypted_filename>')
-def remove_file(encrypted_filename):
+@app.route('/r/<filename>')
+def remove(filename):
     filename = decrypt(encrypted_filename)
     source_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     os.remove(source_file)
-    flash('File removed: ' + filename)
+    flash('File deleted: ' + filename)
     return redirect(url_for('list_files'))
 
-@app.route('/i/<encrypted_filename>')
-def parse_file(encrypted_filename):
-    filename = decrypt(encrypted_filename)
+@app.route('/p/<filename>')
+def parse(fileame):
+    filename = decrypt(filename)
     source_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     flash('File: <a href="/d/' + encrypted_filename + '">' + filename + '</a> (<a href="/i/' + encrypted_filename + '">info</a>)')
     parsed = parse(source_file)

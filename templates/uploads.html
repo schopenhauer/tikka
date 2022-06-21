@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h3>Data chunks</h3>
+<h3>Uploaded files</h3>
 
 <table class="uk-table uk-table-small uk-table-striped">
   <thead>
     <tr>
-      <td>File</td>
+      <td>File name</td>
       <td>Actions</td>
       <td>Size</td>
       <td>Timestamp</td>
@@ -15,11 +15,13 @@
   <tbody>
      {% for file in files %}
       <tr>
-        <td><span uk-icon="file-text"></span> <a href="/d/{{ links[loop.index-1] }}">{{ file }}</a></td>
         <td>
-          <span uk-icon="git-branch"></span> <a href="/i/{{ links[loop.index-1] }}">Analyse</a>
+          <span uk-icon="file-text"></span> <a href="/d/{{ links[loop.index-1] }}">{{ file }}</a>
+        </td>
+        <td>
+          <span uk-icon="git-branch"></span> <a href="/p/{{ links[loop.index-1] }}">Analyse</a>
           <span uk-icon="download"></span> <a href="/d/{{ links[loop.index-1] }}">Download</a>
-          <span uk-icon="trash"></span> <a href="/r/{{ links[loop.index-1] }}" onClick="return confirm('Are you sure?');">Remove</a>
+          <span uk-icon="trash"></span> <a href="/r/{{ links[loop.index-1] }}" onClick="return confirm('Are you sure?');">Delete</a>
         </td>
         <td>{{ sizes[loop.index-1] }}</td>
         <td>{{ dates[loop.index-1] }}</td>
